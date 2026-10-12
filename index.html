@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Volunteers' Club</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Courier+Prime:wght@400;700&display=swap">
+<style>
+/* Layout: one narrow column that grows to a centered card stack on wide screens.
+   Palette: aged parchment, ink, ochre accent, oxblood warning. Snicket-style sepia gothic. */
+:root {
+  --bg: #efe6cf;
+  --paper: #f8f2de;
+  --ink: #221d16;
+  --muted: #5b4f40;
+  --accent: #7f520f;
+  --oxblood: #6e1d1d;
+  --line: #b8a57c;
+  --chip: #e4d9b8;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15120e; --paper: #1f1a14; --ink: #ece2c6; --muted: #b5a784;
+    --accent: #dba94d; --oxblood: #c9695c; --line: #4f4433; --chip: #2b241b;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15120e; --paper: #1f1a14; --ink: #ece2c6; --muted: #b5a784;
+  --accent: #dba94d; --oxblood: #c9695c; --line: #4f4433; --chip: #2b241b;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 17px/1.55 "Libre Caslon Text", Georgia, serif;
+}
+.wrap {
+  max-width: 560px;
+  margin: 0 auto;
+  padding-inline: 16px;
+  padding-block: 16px 110px;
+}
+h1, h2, h3 {
+  font-family: "IM Fell English SC", Georgia, serif;
+  font-weight: 400;
+  letter-spacing: .02em;
+  text-wrap: balance;
+  margin: 0;
+  line-height: 1.15;
+}
+p { margin: 0; }
+.mono { font-family: "Courier Prime", ui-monospace, monospace; }
+.kicker {
+  font-family: "Courier Prime", monospace;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  font-size: 12px;
+  color: var(--muted);
+}
+.small { font-size: 14px; }
+.masthead {
+  border-top: 3px double var(--ink);
+  border-bottom: 1px solid var(--ink);
+  padding: 12px 0;
+  text-align: center;
+  display: grid;
+  gap: 4px;
+}
+.masthead h1 { font-size: 38px; }
+.screen { display: grid; gap: 18px; margin-top: 18px; }
+.lede { font-style: italic; color: var(--muted); }
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 16px;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.card.closed { opacity: .8; }
+.card h3 { font-size: 22px; }
+.org { font-weight: 700; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  font: 12px "Courier Prime", monospace;
+  border: 1px solid var(--line);
+  padding: 2px 6px;
+  color: var(--muted);
+  background: var(--chip);
+}
+.tag.warn { border-color: var(--oxblood); color: var(--oxblood); background: transparent; }
+.note { font-size: 15px; color: var(--muted); font-style: italic; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn {
+  font: 700 15px "Courier Prime", monospace;
+  background: var(--ink);
+  color: var(--bg);
+  border: 1px solid var(--ink);
+  padding: 11px 14px;
+  min-height: 44px;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.btn.ghost { background: transparent; color: var(--ink); }
+.btn.small { min-height: 36px; font-size: 13px; padding: 6px 10px; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+button, a, input, select, textarea { font: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  min-width: 0;
+}
+.filters label { display: grid; gap: 4px; font-size: 14px; min-width: 0; }
+select, textarea {
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 10px 40px 10px 12px;
+  min-height: 44px;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+textarea { min-height: 220px; line-height: 1.5; }
+.check { display: flex; align-items: center; gap: 10px; grid-column: 1 / -1; min-height: 44px; }
+.check input { width: 22px; height: 22px; }
+fieldset {
+  border: 1px solid var(--line);
+  padding: 12px;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+legend { padding: 0 6px; font-family: "IM Fell English SC", Georgia, serif; font-size: 18px; }
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 44px;
+  padding: 6px 4px;
+  cursor: pointer;
+}
+.choice input { width: 22px; height: 22px; margin-top: 2px; flex: none; }
+.count { font-family: "Courier Prime", monospace; font-size: 14px; color: var(--muted); }
+.empty {
+  border: 1px dashed var(--line);
+  padding: 18px;
+  font-style: italic;
+  color: var(--muted);
+}
+.nav {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  display: flex;
+  justify-content: space-around;
+  z-index: 5;
+}
+.nav button {
+  flex: 1;
+  background: none;
+  border: 0;
+  color: var(--muted);
+  min-height: 56px;
+  padding: 6px;
+  font: 700 13px "Courier Prime", monospace;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.nav button[aria-current="page"] { color: var(--ink); box-shadow: inset 0 3px 0 var(--accent); }
+.sheet-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .55);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 10;
+}
+.sheet {
+  background: var(--paper);
+  border-top: 3px double var(--ink);
+  width: 100%;
+  max-width: 560px;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  display: grid;
+  gap: 12px;
+}
+.sheet label { display: grid; gap: 4px; font-size: 14px; }
+.sheet .check { grid-column: auto; }
+.emblem { width: 96px; height: auto; margin: 0 auto; color: var(--ink); display: block; }
+.stamp {
+  font-family: "Courier Prime", monospace;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  font-size: 12px;
+  color: var(--oxblood);
+  border: 1px solid var(--oxblood);
+  padding: 2px 8px;
+  justify-self: start;
+  transform: rotate(-1deg);
+}
+.ornament {
+  font-family: "Courier Prime", monospace;
+  text-align: center;
+  color: var(--muted);
+  letter-spacing: .5em;
+  margin: 0;
+}
+.footnote {
+  font-size: 13px;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+.filters label:not(.check) { position: relative; }
+.filters select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 44px;
+}
+.filters label:not(.check)::after {
+  content: "";
+  position: absolute;
+  right: 20px;
+  bottom: 19px;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+.wordfooter {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  display: grid;
+  gap: 6px;
+}
+.wordfooter .word { font-family: "IM Fell English SC", Georgia, serif; font-size: 22px; }
+.wordfooter .sample { font-style: italic; color: var(--muted); }
+[hidden] { display: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+.filters > label:nth-child(3) { grid-column: 1 / -1; }
+.filters .check { display: flex; flex-direction: row; align-items: center; gap: 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <svg class="emblem" viewBox="0 -8 120 72" role="img" aria-label="Emblem: an open eye inside a pointed frame, with flames rising above">
+      <path d="M60 62 L6 34 L60 6 L114 34 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M60 36 Q40 24 22 34 Q40 44 60 36 Z M60 36 Q80 24 98 34 Q80 44 60 36 Z" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <circle cx="60" cy="33" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="60" cy="33" r="3.5" fill="currentColor"/>
+      <path d="M52 -2 Q56 -8 53 -14 M60 -4 Q65 -10 61 -16 M68 -2 Q72 -8 69 -14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <p class="kicker">A directory of helping hands · San Francisco Bay Area</p>
+    <h1>Volunteers' Club</h1>
+    <p class="ornament" aria-hidden="true">~ ◆ ~</p>
+  </header>
+
+  <!-- ONBOARDING -->
+  <section id="onboard" class="screen" hidden aria-labelledby="ob-h">
+    <p class="kicker">Before we begin</p>
+    <h2 id="ob-h">Four questions, asked plainly</h2>
+    <p class="lede">We ask these so the listings fit you. Every answer is optional. Your answers are stored only on this device, and you can change them at any time.</p>
+    <form id="ob-form" class="screen" style="margin-top:0">
+      <fieldset>
+        <legend>Your age range</legend>
+        <label class="choice"><input type="radio" name="age" value="u15"> Under 15</label>
+        <label class="choice"><input type="radio" name="age" value="15"> 15 to 17</label>
+        <label class="choice"><input type="radio" name="age" value="18"> 18 to 29</label>
+        <label class="choice"><input type="radio" name="age" value="30"> 30 to 49</label>
+        <label class="choice"><input type="radio" name="age" value="50"> 50 to 64</label>
+        <label class="choice"><input type="radio" name="age" value="65"> 65 or older</label>
+      </fieldset>
+      <fieldset>
+        <legend>What kind of volunteer are you?</legend>
+        <label class="choice"><input type="radio" name="persona" value="experienced"> I know what I'm doing, and I want clear time commitments.</label>
+        <label class="choice"><input type="radio" name="persona" value="new"> I'm new to the city and want one visit to get a feel for it.</label>
+        <label class="choice"><input type="radio" name="persona" value="community"> I want real community, and possibly a seat on a board someday.</label>
+      </fieldset>
+      <fieldset>
+        <legend>Which causes do you care about?</legend>
+        <p class="small lede">Pick any. Matching listings appear first.</p>
+        <label class="choice"><input type="checkbox" name="cause" value="animals"> Animals</label>
+        <label class="choice"><input type="checkbox" name="cause" value="environment"> Environment &amp; parks</label>
+        <label class="choice"><input type="checkbox" name="cause" value="science"> Science &amp; education</label>
+        <label class="choice"><input type="checkbox" name="cause" value="tech"> Libraries &amp; tech</label>
+        <label class="choice"><input type="checkbox" name="cause" value="events"> Sports &amp; events</label>
+        <label class="choice"><input type="checkbox" name="cause" value="civic"> Social &amp; civic</label>
+        <label class="choice"><input type="checkbox" name="cause" value="arts"> Arts &amp; culture</label>
+      </fieldset>
+      <fieldset>
+        <legend>What can you do comfortably?</legend>
+        <p class="small lede">Pick everything that applies. Only listings that fit these show up under "Only what fits my body."</p>
+        <label class="choice"><input type="checkbox" name="body" value="sit"> Sit for long stretches</label>
+        <label class="choice"><input type="checkbox" name="body" value="stand"> Stand or walk for a shift</label>
+        <label class="choice"><input type="checkbox" name="body" value="computer"> Type at a computer</label>
+        <label class="choice"><input type="checkbox" name="body" value="outdoor"> Work outdoors, including weeding</label>
+        <label class="choice"><input type="checkbox" name="body" value="lift"> Lift up to about 30 lb</label>
+        <label class="choice"><input type="checkbox" name="body" value="wet"> Get wet or dirty</label>
+        <label class="choice"><input type="checkbox" name="body" value="humid"> Work in hot, humid rooms</label>
+      </fieldset>
+      <div class="row">
+        <button class="btn" type="submit">Continue</button>
+        <button class="btn ghost" type="button" data-go="discover">Skip for now</button>
+      </div>
+    </form>
+    <p class="footnote">† Your answers are not shared with anyone. We are a volunteer organization, and we find that discretion is occasionally required.</p>
+  </section>
+
+  <!-- DISCOVER -->
+  <section id="discover" class="screen" hidden aria-labelledby="d-h">
+    <div>
+      <p class="kicker">Openings in San Francisco</p>
+      <h2 id="d-h">Find a way to help</h2>
+      <p class="lede" style="margin-top:6px">Each listing was checked against its organization's public page on October 12, 2026, unless noted*.<br><span class="small">* Openings change. Confirm before you go.</span></p>
+    </div>
+
+    <div class="filters" role="group" aria-label="Filter listings">
+      <label>Commitment
+        <select id="f-commit">
+          <option value="any">Any</option>
+          <option value="one-time">One-time</option>
+          <option value="ongoing">Ongoing</option>
+          <option value="long">Long-term (6+ months)</option>
+          <option value="leadership">Leadership</option>
+        </select>
+      </label>
+      <label>Type
+        <select id="f-type">
+          <option value="any">Any</option>
+          <option value="animals">Animals</option>
+          <option value="environment">Environment &amp; parks</option>
+          <option value="science">Science &amp; education</option>
+          <option value="tech">Libraries &amp; tech</option>
+          <option value="events">Sports &amp; events</option>
+          <option value="civic">Social &amp; civic</option>
+          <option value="arts">Arts &amp; culture</option>
+        </select>
+      </label>
+      <label>Location
+        <select id="f-loc">
+          <option value="any">Anywhere in SF</option>
+          <option value="Golden Gate Park">Golden Gate Park</option>
+          <option value="Presidio">Presidio</option>
+          <option value="Mission">Mission</option>
+          <option value="Citywide">Citywide</option>
+          <option value="San Francisco">San Francisco</option>
+          <option value="Embarcadero">Embarcadero</option>
+          <option value="Sausalito">Sausalito</option>
+          <option value="Citywide">Citywide (Bay Area)</option>
+          <option value="California coast">California coast</option>
+        </select>
+      </label>
+      <label class="check"><input type="checkbox" id="f-fits"> Only what fits my body</label>
+    </div>
+
+    <p class="count" id="count" aria-live="polite"></p>
+    <div id="list" class="screen" style="margin-top:0"></div>
+  </section>
+
+  <!-- SAVED -->
+  <section id="saved" class="screen" hidden aria-labelledby="s-h">
+    <div>
+      <p class="kicker">Your shortlist</p>
+      <h2 id="s-h">Saved</h2>
+    </div>
+    <div id="saved-list" class="screen" style="margin-top:0"></div>
+  </section>
+
+  <!-- YOU -->
+  <section id="you" class="screen" hidden aria-labelledby="y-h">
+    <div>
+      <p class="kicker">Your profile</p>
+      <h2 id="y-h">You</h2>
+    </div>
+    <div class="card" id="profile-card"></div>
+    <div class="row">
+      <button class="btn" type="button" data-go="onboard">Change my answers</button>
+      <button class="btn ghost" type="button" id="clear">Clear my data</button>
+    </div>
+    <div class="card">
+      <p class="kicker">Who else is interested</p>
+      <h3>Nobody here yet</h3>
+      <p class="note">Interest is stored on this device only, so there is no one else to show. Showing other members who saved the same listing needs a shared store. That is the next thing to build. Until then, nobody's name or number appears here.</p>
+    </div>
+  </section>
+
+  <footer class="wordfooter" aria-label="Word of the day">
+    <p class="kicker">A word for the discerning volunteer · a new one every eight hours</p>
+    <p><span class="word" id="w-word"></span> <span class="mono small" id="w-pos"></span></p>
+    <p id="w-def"></p>
+    <p class="sample" id="w-ex"></p>
+  </footer>
+
+</div>
+
+<!-- DRAFT EMAIL SHEET -->
+<div class="sheet-bg" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-h">
+  <div class="sheet">
+    <p class="kicker">Unsent correspondence. Handle with care.</p>
+    <h2 id="sheet-h">Interest email to <span id="sheet-org"></span></h2>
+    <p class="small lede">This draft is built from your answers. Nothing is sent from here. Copy it, edit it, and send it from your own email.</p>
+    <label>Your name
+      <input id="d-name" type="text" autocomplete="name" placeholder="First and last name">
+    </label>
+    <label>When you're free
+      <input id="d-avail" type="text" placeholder="e.g. Saturday mornings, or weekday evenings">
+    </label>
+    <label class="check"><input type="checkbox" id="d-body"> Mention my physical preferences (optional)</label>
+    <label>Draft
+      <textarea id="draft-text"></textarea>
+    </label>
+    <div class="row">
+      <button class="btn" type="button" id="draft-copy">Copy draft</button>
+      <button class="btn ghost" type="button" data-close>Close</button>
+    </div>
+    <p class="small note">Editing the fields above rebuilds the draft and discards any changes you made to the text.</p>
+  </div>
+</div>
+
+<nav class="nav" aria-label="Main">
+  <button type="button" data-go="discover">Discover</button>
+  <button type="button" data-go="saved" id="nav-saved">Saved (0)</button>
+  <button type="button" data-go="you">You</button>
+</nav>
+
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+  const LABEL = {
+    sit: "Sitting", stand: "Standing", computer: "Computer work", outdoor: "Outdoors",
+    lift: "Lifting up to 30 lb", wet: "Wet or dirty work", humid: "Hot, humid rooms"
+  };
+  const TYPE = { animals: "Animals", environment: "Environment & parks", science: "Science & education", tech: "Libraries & tech", events: "Sports & events", civic: "Social & civic", arts: "Arts & culture" };
+  const COMMIT = { "one-time": "One-time", ongoing: "Ongoing", long: "Long-term (6+ months)", leadership: "Leadership" };
+  const AGE_FLOOR = { u15: 0, "15": 15, "18": 18, "30": 30, "50": 50, "65": 65 };
+  const AGE_LABEL = { u15: "Under 15", "15": "15 to 17", "18": "18 to 29", "30": "30 to 49", "50": "50 to 64", "65": "65 or older" };
+  const PERSONA_COMMIT = { experienced: "any", new: "one-time", community: "long" };
+  const PERSONA_LABEL = { experienced: "Experienced volunteer", new: "New to the city", community: "Looking for community" };
+
+  const SPCA_SIGNUP = "https://app.betterimpact.com/PublicOrganization/44ad8a43-5779-4d83-9890-71447b5e91f3/1";
+  const SPCA_PAGE = "https://www.sfspca.org/join-our-community/volunteer/";
+  const CAL_FORM = "https://www.volgistics.com/appform/727448514";
+  const CAL_PAGE = "https://www.calacademy.org/volunteering-at-the-academy";
+
+  // Listings checked against public org pages, October 12, 2026.
+  const OPPS = [
+    { id: "spca-shelter", org: "San Francisco SPCA", title: "Shelter volunteer", type: "animals", loc: "Mission", commit: "long", minAge: 18, physical: ["stand"],
+      time: "About 2 hours a week, 6-month minimum",
+      summary: "Walk shelter dogs, socialize cats, and help adopters. You attend an in-person information session before you apply.",
+      signup: SPCA_SIGNUP, email: "volunteers@sfspca.org",
+      note: "Closed-toe shoes are required for work with animals." },
+    { id: "spca-foster", org: "San Francisco SPCA", title: "Foster care", type: "animals", loc: "Citywide", commit: "ongoing", minAge: 18, physical: ["sit"],
+      time: "Until each animal is ready for adoption",
+      summary: "Care for cats, dogs, or underage kittens and puppies in your own home. You can also help with virtual adoptions.",
+      signup: SPCA_PAGE, email: "volunteers@sfspca.org",
+      note: "Most of this work happens at home." },
+    { id: "spca-medicine", org: "San Francisco SPCA", title: "Community Medicine clinics", type: "animals", loc: "Citywide", commit: "ongoing", minAge: 18, physical: ["stand", "outdoor"],
+      time: "Shift schedule is on the volunteer page",
+      summary: "Help bring accessible veterinary care to clinics across San Francisco and the Central Valley. The clinics travel to neighborhoods that need them.",
+      signup: SPCA_PAGE, email: "volunteers@sfspca.org" },
+    { id: "spca-general", org: "San Francisco SPCA", title: "General support", type: "animals", loc: "Mission", commit: "ongoing", minAge: 18, physical: ["stand", "outdoor", "lift"],
+      time: "Ask the volunteer team for current shifts",
+      summary: "The SPCA needs photographers, greeters, gardeners, and laundry helpers.",
+      signup: SPCA_PAGE, email: "volunteers@sfspca.org" },
+    { id: "cal-animal-health", org: "California Academy of Sciences", title: "Animal Health volunteer", type: "animals", loc: "Golden Gate Park", commit: "ongoing", minAge: 18, physical: ["stand", "wet"],
+      time: "Shift requirements are on the application form",
+      summary: "Work in the hospital and quarantine areas. Clean exhibits, prepare diets, watch medical procedures, and keep records.",
+      signup: CAL_FORM, email: "volunteers@calacademy.org",
+      note: "The Academy links a role description PDF from its volunteer page." },
+    { id: "cal-landscape", org: "California Academy of Sciences", title: "Landscape Horticulture volunteer", type: "environment", loc: "Golden Gate Park", commit: "ongoing", minAge: 18, physical: ["outdoor", "lift", "stand"],
+      time: "Shift requirements are on the application form",
+      summary: "Work outdoors on California native gardens and the 2.5-acre rooftop botanical ecosystem.",
+      signup: CAL_FORM, email: "volunteers@calacademy.org",
+      note: "The Academy describes this as moderately strenuous work, including lifting up to 30 lb." },
+    { id: "cal-rainforest", org: "California Academy of Sciences", title: "Rainforest Horticulture volunteer", type: "environment", loc: "Golden Gate Park", commit: "ongoing", minAge: 18, physical: ["stand", "humid"],
+      time: "Shift requirements are on the application form",
+      summary: "Maintain the plants inside the Osher Rainforest and expand your horticulture skills.",
+      signup: CAL_FORM, email: "volunteers@calacademy.org",
+      note: "You need to be comfortable in hot, humid conditions." },
+    { id: "cal-scicomp", org: "California Academy of Sciences", title: "Scientific Computing volunteer", type: "science", loc: "Golden Gate Park", commit: "ongoing", minAge: 18, physical: ["computer", "sit"],
+      time: "Positions are tailored to your skills and availability",
+      summary: "Bring programming, IT, or database skills to genomics, collections, and computing work.",
+      signup: CAL_FORM, email: "volunteers@calacademy.org",
+      note: "Review the Academy's list of current computing projects before you apply." },
+    { id: "cal-research", org: "California Academy of Sciences", title: "Research Collections volunteer", type: "science", loc: "Golden Gate Park", commit: "ongoing", minAge: 18, physical: ["sit", "stand"],
+      time: "Shift requirements are on the application form",
+      summary: "Prepare and maintain scientific collections. Mount plants, classify bones, rebottle specimens, and document collections.",
+      signup: CAL_FORM, email: "volunteers@calacademy.org" },
+    { id: "cal-water", org: "California Academy of Sciences", title: "Water Quality volunteer", type: "science", loc: "Golden Gate Park", commit: "ongoing", minAge: 18, physical: ["stand"],
+      time: "Shift requirements are on the application form",
+      summary: "Run water quality tests on samples from the exhibits at Steinhart Aquarium.",
+      signup: CAL_FORM, email: "volunteers@calacademy.org",
+      note: "Laboratory experience helps." },
+    { id: "cal-aquarium", org: "California Academy of Sciences", title: "Aquarium Husbandry volunteer", type: "animals", loc: "Golden Gate Park", commit: "ongoing", minAge: 18, physical: ["wet", "stand"],
+      time: "Weekly commitment",
+      summary: "Help staff care for the animals and habitats at Steinhart Aquarium.",
+      signup: CAL_FORM, email: "volunteers@calacademy.org",
+      note: "The Academy warns that you will get wet and dirty. This is a good match if you want to learn what aquarium work involves." },
+    { id: "cal-naturalist", org: "California Academy of Sciences", title: "Naturalist Center Engagement volunteer", type: "science", loc: "Golden Gate Park", commit: "ongoing", minAge: 18, physical: ["stand"],
+      time: "Shift requirements are on the application form",
+      summary: "Lead hands-on science activities for guests of all ages, such as owl pellet dissection and studying iridescence.",
+      signup: CAL_FORM, email: "volunteers@calacademy.org" },
+    { id: "cal-docent", org: "California Academy of Sciences", title: "Docent", type: "science", loc: "Golden Gate Park", commit: "long", minAge: 18, physical: ["stand"],
+      time: "Long-term. Check the role description for the schedule",
+      summary: "An informal educator on the exhibit floor. Use specimens from the docent collection to help visitors explore.",
+      signup: CAL_FORM, email: "volunteers@calacademy.org",
+      note: "The Special Engagement Volunteer role is a lighter version with a lower monthly shift commitment." },
+    { id: "cal-sev", org: "California Academy of Sciences", title: "Special Engagement Volunteer", type: "science", loc: "Golden Gate Park", commit: "ongoing", minAge: 18, physical: ["stand"],
+      time: "Lower monthly shift commitment than a docent",
+      summary: "A public-facing role for people with limited time. You support the Public Programs team with informal engagement on the floor.",
+      signup: CAL_FORM, email: "volunteers@calacademy.org" },
+    { id: "cal-orienteer", org: "California Academy of Sciences", title: "Orienteer (Guest Experience)", type: "science", loc: "Golden Gate Park", commit: "ongoing", minAge: 18, physical: ["stand"],
+      time: "Shift requirements are on the application form",
+      summary: "Greet guests, answer questions, and help visitors find their way on the public floor.",
+      signup: CAL_FORM, email: "volunteers@calacademy.org" },
+    { id: "cal-nightlife", org: "California Academy of Sciences", title: "NightLife Ambassador", type: "science", loc: "Golden Gate Park", commit: "ongoing", minAge: 21, physical: ["stand"],
+      time: "Thursday evenings only",
+      summary: "Greet guests and help make the evening NightLife events welcoming and easy to enjoy.",
+      signup: CAL_FORM, email: "volunteers@calacademy.org",
+      note: "You must be 21 or older." },
+    { id: "cal-penguins", org: "California Academy of Sciences", title: "Penguins and Pajamas volunteer", type: "science", loc: "Golden Gate Park", commit: "ongoing", minAge: 18, physical: ["stand"],
+      time: "At least six events from October 2026 to June 2027, 5:30 to 9 PM",
+      summary: "Guide families through crafts, story time, and early childhood activities during evening sleepovers.",
+      signup: CAL_FORM, email: "volunteers@calacademy.org" },
+    { id: "cal-serv", org: "California Academy of Sciences", title: "Support for Education Research Volunteer (SERV)", type: "science", loc: "Golden Gate Park", commit: "ongoing", minAge: 18, physical: ["computer", "sit"],
+      time: "September 1 to November 19, 2026",
+      summary: "Help early career researchers with data collection and analysis on climate and biodiversity education, with workshops included.",
+      signup: CAL_PAGE, email: "volunteers@calacademy.org",
+      status: "Applications closed July 26, 2026", closed: true },
+    { id: "presidio-nursery", org: "Golden Gate National Parks Conservancy", title: "Presidio Nursery drop-in", type: "environment", loc: "Presidio", commit: "one-time", minAge: 0, physical: ["outdoor", "stand", "sit"],
+      time: "Wednesdays and Saturdays, 1 to 4 PM on the program listing. Registration is required, up to the day before",
+      summary: "Grow and care for native plants: collect seeds, transplant seedlings, prune, and weed the pots. No experience is needed, and training and tools are provided.",
+      signup: "https://www.parksconservancy.org/programs/npn/presidio-nursery", email: "volunteer@parksconservancy.org",
+      note: "We'll be working rain or shine. Wear long pants and closed-toe shoes. Under-18s need a signed agreement form. The dated event pages we found were from 2017 or earlier, so confirm current days first." },
+    { id: "ia-events", org: "Internet Archive", title: "Special event volunteer", type: "tech", loc: "San Francisco", commit: "one-time", minAge: 0, physical: ["stand"],
+      time: "Per event",
+      summary: "Greet guests, help with setup and breakdown, and support A/V at events.",
+      signup: "https://archive.org/about/volunteer-positions", email: null,
+      status: "Not verified",
+      note: "The Internet Archive volunteer page requires JavaScript, so we could not read its current openings. This role comes from older pages. Check the page yourself before you apply." },
+    { id: "techcrunch-disrupt", org: "TechCrunch", title: "Disrupt 2026 conference volunteer", type: "events", loc: "San Francisco", commit: "one-time", minAge: 18, physical: ["stand"],
+      time: "At least 12 hours across October 13 to 15, 2026, plus an in-person orientation on the afternoon of October 12",
+      summary: "Support the conference from behind the scenes. Volunteers get a complimentary pass for all three days and a close look at how the startup world works.",
+      signup: "https://techcrunch.com/2026/09/17/last-call-disrupt-volunteer-application-closes-soon/", email: null,
+      status: "Applications closed September 22, 2026", closed: true,
+      note: "The program does not reopen until next year. Watch for the next call." },
+    { id: "pinkathon-sf", org: "Pinkathon SF", title: "Race-day set-up, check-in, and course cheering", type: "events", loc: "Embarcadero", commit: "one-time", minAge: 0, physical: ["outdoor", "stand"],
+      time: "Race-day shifts from 6 to 10 AM, 7 to 10 AM, or 9 AM to noon. Cleanup runs 1 to 3 PM",
+      summary: "Set up and check in participants at the Ferry Building, or direct runners and walkers at the turnaround. Cleanup crews are also needed.",
+      signup: "https://runsignup.com/Race/Volunteer/CA/AnyPlaceintheWorld/PinkathonSF", email: "lisa@pinkathon.org",
+      note: "The volunteer listing shows a 2025 race-day date, and the challenge runs through October 31, 2026. Confirm the race date with the organizers before you sign up. Age requirements are not listed." },
+    { id: "one-brick", org: "One Brick", title: "Event volunteering with local nonprofits", type: "events", loc: "San Francisco", commit: "one-time", minAge: 0, physical: ["stand"],
+      time: "Varies by event. See the calendar",
+      summary: "A volunteer community that staffs events for local nonprofits, including check-in and event support roles.",
+      signup: "https://onebrick.org/calendar", email: "ed@onebrick.org",
+      status: "Not verified",
+      note: "The calendar we could read only runs to December 2025, so we could not confirm upcoming shifts. The email is the recruiting contact for the Events Team." },
+    { id: "hot-chocolate-run", org: "Skechers Hot Chocolate Run", title: "Race-day volunteer (SF 5K, 10K, 15K)", type: "events", loc: "Golden Gate Park", commit: "one-time", minAge: 0, physical: [],
+      time: "Race day is Sunday, January 10, 2027. Volunteer shifts are not posted yet",
+      summary: "The January race in Golden Gate Park. Race listings say logistics are still coming, and no volunteer roles have been posted.",
+      signup: "https://www.letsdothis.com/us/e/2027-skechers-hot-chocolate-run-san-francisco-268572", email: null,
+      status: "Volunteer sign-up not posted",
+      note: "We checked the race listing and found no volunteer roles, shifts, or sign-up link. Check the official race site later, or ask the race organizers directly." },
+    { id: "sf-ballet-bravo", org: "San Francisco Ballet", title: "BRAVO volunteer group", type: "arts", loc: "San Francisco", commit: "ongoing", minAge: 0, physical: [],
+      time: "Not posted",
+      summary: "The ballet's volunteer group offers several ways to give time, with behind-the-scenes access to the company.",
+      signup: "https://www.sfballet.org/support-us/get-involved/volunteer-more/", email: null,
+      status: "Details not posted",
+      note: "The volunteer page lists BRAVO, the Young Patrons Circle, and ushering, but gives no time commitments, requirements, or dates." },
+    { id: "sf-opera-volunteer", org: "San Francisco Opera", title: "General volunteer (ushers, tours, events, backstage)", type: "arts", loc: "San Francisco", commit: "ongoing", minAge: 0, physical: [],
+      time: "Not posted. Ushers contact Ushers@SFOpera.com",
+      summary: "Help with outdoor and fundraising events, office projects, War Memorial Opera House tours, backstage refreshments, or as an usher during performances.",
+      signup: "https://www.sfopera.com/about/volunteering/", email: "sfoguild@sfopera.com",
+      status: "Details not posted",
+      note: "Apply with the Volunteer Application PDF, emailed to the SF Opera Guild or mailed to 301 Van Ness Avenue. The Volunteer Office number is (415) 565-3204." },
+    { id: "stern-grove", org: "Stern Grove Festival", title: "Concert-day volunteer", type: "events", loc: "San Francisco", commit: "one-time", minAge: 18, physical: ["outdoor", "stand"],
+      time: "Shifts open periodically. A full shift earns two General Admission tickets to a future show",
+      summary: "Welcome guests and help keep the park clean on concert days, or join weekday Grove cleanups.",
+      signup: "https://sterngrove.org/volunteer", email: "volunteer@sterngrove.org",
+      note: "Sign up through the Volunteer Portal. The page does not show a year, so confirm which season the shifts belong to. Volunteers must be 18 or older." },
+    { id: "sf-symphony-community", org: "San Francisco Symphony", title: "Community volunteer (ushers, events, office)", type: "arts", loc: "San Francisco", commit: "ongoing", minAge: 0, physical: [],
+      time: "Year-round. Hours not posted",
+      summary: "Usher, help organize community concerts, work in the office, or join the Volunteer League.",
+      signup: "https://sfsymphony.org/Community-Volunteer", email: null,
+      status: "Details not posted",
+      note: "The page does not say whether applications are open, and its application link did not load in our check." },
+    { id: "creativemornings-sf", org: "CreativeMornings San Francisco", title: "Chapter volunteer", type: "arts", loc: "San Francisco", commit: "ongoing", minAge: 0, physical: [],
+      time: "Monthly talks. Next talk: October 16, 2026, 8:30 AM at The Faight Collective",
+      summary: "Help the San Francisco chapter put on its monthly talks. Volunteer roles are not posted, so ask the chapter directly.",
+      signup: "https://www.creativemornings.com/cities/SF", email: "sf@creativemornings.com",
+      status: "Roles not posted",
+      note: "The chapter describes its Clubs as community-led, so you can also start or lead one around an interest." },
+    { id: "mmc-adult", org: "The Marine Mammal Center", title: "Adult volunteer (Sausalito and SF Bay Area)", type: "animals", loc: "Sausalito", commit: "ongoing", minAge: 18, physical: [],
+      time: "Not posted on the role summary page",
+      summary: "Volunteer at the center's Sausalito and Bay Area rescue and care work for marine mammals.",
+      signup: "https://www.marinemammalcenter.org/get-involved/volunteer/sausalito/adult", email: null,
+      status: "Details not posted",
+      note: "Existing volunteers sign in through a separate page. For general questions, use the center's contact page." },
+    { id: "mmc-youth", org: "The Marine Mammal Center", title: "Youth Crew (high school students)", type: "animals", loc: "Sausalito", commit: "ongoing", minAge: 0, physical: [],
+      time: "Not posted on the role summary page",
+      summary: "A volunteer crew for high school students at the Sausalito center.",
+      signup: "https://www.marinemammalcenter.org/get-involved/volunteer/sausalito/youth-crew", email: null,
+      status: "Details not posted" },
+    { id: "sfbbo-tabling", org: "SF Bay Bird Observatory", title: "Tabling outreach at community events", type: "environment", loc: "Citywide", commit: "ongoing", minAge: 16, physical: [],
+      time: "Depends on the event schedule",
+      summary: "Share bird and conservation information, and lead activities at the observatory's table at community events.",
+      signup: "https://www.flipcause.com/secure/cause_pdetails/MjMyMTUw", email: "info@sfbbo.org",
+      status: "Open",
+      note: "No experience needed. Applications are accepted at any time." },
+    { id: "sfbbo-marsh", org: "SF Bay Bird Observatory", title: "Tidal marsh habitat restoration", type: "environment", loc: "Citywide", commit: "one-time", minAge: 0, physical: ["outdoor"],
+      time: "Varies by event. See the events page for dates",
+      summary: "Individual or group work days restoring tidal marsh habitat.",
+      signup: "https://www.sfbbo.org/events/", email: "info@sfbbo.org",
+      status: "Open through event sign-ups",
+      note: "Outdoor marsh work is inferred from the habitat restoration role. The page doesn't list physical demands." },
+    { id: "sfbbo-waterbird", org: "SF Bay Bird Observatory", title: "Colonial waterbird nest monitoring", type: "environment", loc: "Citywide", commit: "ongoing", minAge: 16, physical: [],
+      time: "One or two days a month, January to August, plus January training",
+      summary: "Monitor waterbird colonies during nesting season. Open to beginners and families.",
+      signup: "https://www.sfbbo.org/volunteer.html", email: "info@sfbbo.org",
+      status: "Closed until January 2027", closed: true,
+      note: "Applications open in January. Check back then." },
+    { id: "sf-environment", org: "SF Department of the Environment", title: "Volunteer programs (zero waste, biodiversity, clean energy)", type: "environment", loc: "Citywide", commit: "ongoing", minAge: 0, physical: [],
+      time: "Flexible schedules and shifts",
+      summary: "Hands-on volunteer roles in zero waste, biodiversity, clean energy, and sustainable living, including tabling events. No prior experience is needed.",
+      signup: "https://sfenvironment.org/volunteer", email: null,
+      status: "Schedules change. Check the calendar",
+      note: "Sign up through the department's calendar on Golden Volunteers. Everyone signs a waiver. Minors need a guardian to sign it, and children 13 and under must be accompanied." },
+    { id: "eff-volunteer", org: "Electronic Frontier Foundation", title: "Volunteer technologists, translators, and researchers", type: "tech", loc: "San Francisco", commit: "ongoing", minAge: 0, physical: [],
+      time: "Flexible. Research tasks run from a few minutes to a few hours",
+      summary: "Help EFF defend digital privacy and civil liberties through coding, translation, research on the Atlas of Surveillance dataset, or design.",
+      signup: "https://join.eff.org/atlas/", email: null,
+      status: "Ongoing",
+      note: "Requirements differ by role. Coding needs technical skills, and attorneys join a separate list. Read each role's page before you sign up." },
+    { id: "guide-dogs-custodian", org: "Guide Dogs for the Blind", title: "Breeder dog custodian (SF Bay Area)", type: "animals", loc: "Citywide", commit: "ongoing", minAge: 0, physical: [],
+      time: "Not posted",
+      summary: "Care for a breeder dog in your home. The role covers the San Francisco Bay Area, which includes Marin.",
+      signup: "https://www.guidedogs.com/volunteering/breeder-custodian", email: null,
+      status: "Details not posted",
+      note: "The organization's San Rafael address is a mailing address. Its general line is 800.295.4050. Puppy raising and foster care are listed for other regions, so we left them out." },
+    { id: "reef-check-divers", org: "Reef Check", title: "Kelp forest survey diver (trained divers)", type: "environment", loc: "California coast", commit: "one-time", minAge: 0, physical: ["wet"],
+      time: "Survey days. Dates not posted",
+      summary: "Survey kelp forests with other trained Reef Check divers. Survey days are project based.",
+      signup: "https://www.reefcheck.org/volunteer/", email: "rcinfo@reefcheck.org",
+      status: "Open this season (per an October 2 post)",
+      note: "You must already be a trained Reef Check diver. Training waitlist is open for next year. Other prerequisites are on the organization's website, and the page we checked did not list them." },
+    { id: "cal-aquarium-diver", org: "California Academy of Sciences", title: "Aquarium Diver volunteer", type: "science", loc: "Golden Gate Park", commit: "long", minAge: 18, physical: ["wet"],
+      time: "Shift requirements are on the application form. Older coverage describes a one-year commitment",
+      summary: "Feed fish and keep the aquarium tanks clean. Interested divers may also train to give dive presentations in the Philippine Coral Reef exhibit.",
+      signup: CAL_FORM, email: "volunteers@calacademy.org",
+      note: "Divers need an interview first. Confirm current terms with the Academy, since the commitment length comes from older coverage." },
+    { id: "sfpl-tutor", org: "San Francisco Public Library", title: "Literacy and tech tutor (FOG Readers, Project Read, ESL, Tech Tutor)", type: "tech", loc: "San Francisco", commit: "long", minAge: 0, physical: [],
+      time: "At least two hours a week for six months",
+      summary: "Tutor youth in reading, English literacy, or ESL, or help with digital skills to close the digital divide.",
+      signup: "https://sfpl.org/volunteer-services", email: "volunteer@sfpl.org",
+      status: "Interest forms open. Waiting period possible",
+      note: "Tutors who work with vulnerable groups need a background check, which is free through fingerprinting at City Hall. Library staff tasks like shelving are not volunteer roles." }
+  ];
+
+  // State
+  const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } };
+  const save = () => { try {
+    localStorage.setItem("vc_profile", JSON.stringify(profile));
+    localStorage.setItem("vc_interest", JSON.stringify(interest));
+  } catch (e) {} };
+  let profile = load("vc_profile", { age: "", persona: "", body: [], causes: [] });
+  profile.causes ||= [];
+  let interest = load("vc_interest", []);
+  let filters = { commit: "any", type: "any", loc: "any", fits: false };
+  let draftOpp = null;
+
+  const fitsBody = (o) => profile.body.length > 0 && o.physical.every((p) => profile.body.includes(p));
+  const ageOk = (o) => !profile.age || AGE_FLOOR[profile.age] >= o.minAge;
+
+  function card(o, i) {
+    const saved = interest.includes(o.id);
+    const contact = o.email
+      ? `<span class="mono" data-email="${esc(o.id)}">${esc(o.email)}</span> <button class="btn ghost small" type="button" data-copy="${esc(o.email)}">Copy email</button>`
+      : `No verified email yet`;
+    const signup = o.closed
+      ? `<button class="btn" type="button" disabled>Applications closed</button>`
+      : `<a class="btn" href="${esc(o.signup)}" target="_blank" rel="noopener">Sign up on ${esc(o.org)}'s site</a>`;
+    return `<article class="card ${o.closed ? "closed" : ""}" aria-labelledby="t-${esc(o.id)}">
+      <p class="stamp">Case file No. ${i + 1} · ${esc(TYPE[o.type])} · ${esc(o.loc)}</p>
+      <h3 id="t-${esc(o.id)}">${esc(o.title)}</h3>
+      <p class="org">${esc(o.org)}</p>
+      <p>${esc(o.summary)}</p>
+      <p class="mono small">Time: ${esc(o.time)}</p>
+      <div class="tags">
+        <span class="tag">${esc(COMMIT[o.commit])}</span>
+        <span class="tag">${o.minAge ? o.minAge + "+" : "All ages"}</span>
+        ${o.physical.map((p) => `<span class="tag">${esc(LABEL[p])}</span>`).join("")}
+      </div>
+      ${o.status ? `<p class="tag warn" style="justify-self:start">${esc(o.status)}</p>` : ""}
+      ${o.note ? `<p class="note">${esc(o.note)}</p>` : ""}
+      <p class="small">Contact: ${contact}</p>
+      <div class="row">
+        ${signup}
+        <button class="btn ghost" type="button" data-draft="${esc(o.id)}">Draft interest email</button>
+        <button class="btn ghost" type="button" data-interest="${esc(o.id)}" aria-pressed="${saved}">${saved ? "Saved" : "Save"}</button>
+      </div>
+    </article>`;
+  }
+
+  function renderDiscover() {
+    const hiddenByAge = OPPS.filter((o) => !ageOk(o)).length;
+    const list = OPPS.filter((o) =>
+      (filters.commit === "any" || o.commit === filters.commit) &&
+      (filters.type === "any" || o.type === filters.type) &&
+      (filters.loc === "any" || o.loc === filters.loc) &&
+      (!filters.fits || fitsBody(o)) &&
+      ageOk(o)
+    );
+    list.sort((a, b) => (profile.causes.includes(b.type) ? 1 : 0) - (profile.causes.includes(a.type) ? 1 : 0));
+    const note = [];
+    const uncovered = profile.causes.filter((c) => !OPPS.some((o) => o.type === c));
+    if (uncovered.length) note.push(`No listings yet for: ${uncovered.map((c) => TYPE[c]).join(", ")}.`);
+    if (hiddenByAge) note.push(`${hiddenByAge} listing${hiddenByAge === 1 ? " is" : "s are"} hidden because ${hiddenByAge === 1 ? "it requires" : "they require"} a higher minimum age.`);
+    if (filters.fits && !profile.body.length) note.push(`Tell us what you can do comfortably, under "You," to use this filter.`);
+    $("#count").textContent = `${list.length} listing${list.length === 1 ? "" : "s"} match. ${note.join(" ")}`;
+
+    if (filters.commit === "leadership") {
+      $("#list").innerHTML = `<div class="empty"><p>No leadership seats are listed right now. The volunteer fire brigade searched every page and found none. Check back, or tell us about an organization that needs a board member, and we will add it to the list. This is not a sign of anything sinister. It is simply a quiet season.</p></div>`;
+      return;
+    }
+    $("#list").innerHTML = list.length
+      ? list.map((o, i) => card(o, OPPS.indexOf(o))).join("")
+      : `<div class="empty"><p>Nothing matches these filters. Try loosening one of them.</p></div>`;
+  }
+
+  function renderSaved() {
+    const items = OPPS.filter((o) => interest.includes(o.id));
+    $("#nav-saved").textContent = `Saved (${items.length})`;
+    $("#saved-list").innerHTML = items.length
+      ? items.map((o) => card(o, OPPS.indexOf(o))).join("")
+      : `<div class="empty"><p>Nothing saved yet. Tap Save on any listing and it will appear here.</p></div>`;
+  }
+
+  function renderYou() {
+    const age = profile.age ? AGE_LABEL[profile.age] : "Not answered";
+    const persona = profile.persona ? PERSONA_LABEL[profile.persona] : "Not answered";
+    const body = profile.body.length ? profile.body.map((b) => LABEL[b]).join(", ") : "Not answered";
+    const causes = profile.causes.length ? profile.causes.map((c) => TYPE[c]).join(", ") : "Not answered";
+    $("#profile-card").innerHTML = `
+      <p class="kicker">Age range</p><p>${esc(age)}</p>
+      <p class="kicker">Kind of volunteer</p><p>${esc(persona)}</p>
+      <p class="kicker">Comfortable with</p><p>${esc(body)}</p>
+      <p class="kicker">Causes</p><p>${esc(causes)}</p>`;
+  }
+
+  function show(id) {
+    ["onboard", "discover", "saved", "you"].forEach((s) => {
+      const el = document.getElementById(s);
+      if (el) el.hidden = s !== id;
+    });
+    document.querySelectorAll(".nav button").forEach((b) => {
+      if (b.dataset.go === id) b.setAttribute("aria-current", "page");
+      else b.removeAttribute("aria-current");
+    });
+    if (id === "discover") renderDiscover();
+    if (id === "saved") renderSaved();
+    if (id === "you") renderYou();
+    window.scrollTo({ top: 0 });
+  }
+
+  function applyPersona() {
+    filters.commit = PERSONA_COMMIT[profile.persona] || "any";
+    $("#f-commit").value = filters.commit;
+  }
+
+  // Onboarding
+  $("#ob-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    profile = { age: f.get("age") || "", persona: f.get("persona") || "", body: f.getAll("body"), causes: f.getAll("cause") };
+    save();
+    applyPersona();
+    show("discover");
+  });
+
+  // Filters
+  ["f-commit", "f-type", "f-loc"].forEach((id) => {
+    $("#" + id).addEventListener("change", (e) => {
+      filters[id.slice(2)] = e.target.value;
+      renderDiscover();
+    });
+  });
+  $("#f-fits").addEventListener("change", (e) => { filters.fits = e.target.checked; renderDiscover(); });
+
+  // Interest
+  function toggleInterest(id) {
+    interest = interest.includes(id) ? interest.filter((x) => x !== id) : [...interest, id];
+    save();
+    renderSaved();
+    renderDiscover();
+  }
+
+  // Draft email (rules-based, from the profile; nothing is sent)
+  function buildDraft(o) {
+    const name = $("#d-name").value.trim() || "[Your name]";
+    const avail = $("#d-avail").value.trim() || "[days and times that work for you]";
+    const commitLine = o.commit === "one-time"
+      ? "I'd like to start with a single visit to see how it works."
+      : "I'm looking for a regular commitment and would like to learn what the schedule involves.";
+    const bodyLine = $("#d-body").checked && profile.body.length
+      ? `\n\nFor comfort, I'm best suited to work that involves: ${profile.body.map((b) => LABEL[b].toLowerCase()).join(", ")}.`
+      : "";
+    return `Dear ${o.org} volunteer team,
+
+My name is ${name}, and I'm interested in the ${o.title} opportunity. ${commitLine} I'm available ${avail}.${bodyLine}
+
+Could you tell me whether this role is open now and what the next step is, including any information session or application? Thank you for your time.
+
+${name}`;
+  }
+
+  function openDraft(id) {
+    draftOpp = OPPS.find((o) => o.id === id);
+    $("#sheet-org").textContent = draftOpp.org;
+    $("#draft-text").value = buildDraft(draftOpp);
+    $("#sheet").hidden = false;
+    $("#d-name").focus();
+  }
+  function closeDraft() { $("#sheet").hidden = true; }
+  ["#d-name", "#d-avail", "#d-body"].forEach((s) => {
+    $(s).addEventListener("input", () => { if (draftOpp) $("#draft-text").value = buildDraft(draftOpp); });
+    $(s).addEventListener("change", () => { if (draftOpp) $("#draft-text").value = buildDraft(draftOpp); });
+  });
+
+  async function copyText(text, btn) {
+    const original = btn.textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+      btn.textContent = "Copied";
+    } catch (e) {
+      btn.textContent = "Select and copy";
+    }
+    setTimeout(() => { btn.textContent = original; }, 1800);
+  }
+
+  // Delegated events
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("button, a");
+    if (!t) return;
+    if (t.dataset.go) return show(t.dataset.go);
+    if (t.dataset.draft) return openDraft(t.dataset.draft);
+    if (t.dataset.interest) return toggleInterest(t.dataset.interest);
+    if (t.dataset.copy !== undefined) return copyText(t.dataset.copy, t);
+    if (t.hasAttribute("data-close")) return closeDraft();
+    if (t.id === "draft-copy") return copyText($("#draft-text").value, t);
+    if (t.id === "clear") {
+      if (t.dataset.armed) {
+        profile = { age: "", persona: "", body: [], causes: [] };
+        interest = [];
+        filters = { commit: "any", type: "any", loc: "any", fits: false };
+        save();
+        $("#f-commit").value = "any"; $("#f-type").value = "any"; $("#f-loc").value = "any"; $("#f-fits").checked = false;
+        t.textContent = "Clear my data";
+        delete t.dataset.armed;
+        show("onboard");
+      } else {
+        t.dataset.armed = "1";
+        t.textContent = "Tap again to clear";
+      }
+    }
+  });
+
+  // Word of the day: rotates every eight hours. Definitions paraphrased from Merriam-Webster.
+  const WORDS = [
+    { w: "docent", pos: "noun", def: "A volunteer guide who leads visitors through a museum or gallery and explains what they are looking at.", ex: "The docent spent forty minutes on a fossil, and she was fairly sure no one had ever asked the fossil how it felt." },
+    { w: "sanctuary", pos: "noun", def: "A place of refuge or protection, especially for animals or people who need shelter.", ex: "The rescued seal regarded the sanctuary as acceptable, and said so by ignoring everyone who came to visit." },
+    { w: "altruism", pos: "noun", def: "Concern for the well-being of other people, shown without expecting anything in return.", ex: "Their altruism was so complete that they volunteered to hand out water at a race they had no intention of running." },
+    { w: "stewardship", pos: "noun", def: "The careful, responsible handling of something that has been placed in your care.", ex: "Stewardship of the nursery meant pulling weeds from pots, which, technically, were also growing things." },
+    { w: "custodian", pos: "noun", def: "Someone who looks after, protects, or maintains something.", ex: "The custodian of the breeder dog took the job so seriously that he had already planned the dog's retirement party." },
+    { w: "philanthropy", pos: "noun", def: "Kindness toward other people, especially effort to improve their well-being.", ex: "Philanthropy, she explained, is mostly showing up early with a clipboard and a serious expression." }
+  ];
+  const slot = Math.floor(Date.now() / (8 * 60 * 60 * 1000)) % WORDS.length;
+  const today = WORDS[slot];
+  $("#w-word").textContent = today.w;
+  $("#w-pos").textContent = `(${today.pos})`;
+  $("#w-def").textContent = today.def;
+  $("#w-ex").textContent = `“${today.ex}”`;
+
+  // Start
+  if (!profile.persona && !profile.age && !profile.body.length) {
+    show("onboard");
+  } else {
+    applyPersona();
+    show("discover");
+  }
+  renderSaved();
+})();
+</script>
+</body>
+</html>
